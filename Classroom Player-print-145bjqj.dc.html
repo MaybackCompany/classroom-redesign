@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style data-omelette-print-defaults>
+@media print {
+  @page { margin: 0.5in; }
+  h1, h2, h3, h4, h5, h6 { break-after: avoid; }
+  figure, table, pre, blockquote, img, svg, tr, [class~="card" i] { break-inside: avoid; }
+  img, svg { max-width: 100%; }
+  p { orphans: 3; widows: 3; }
+}
+</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  #qapp{
+    --bg:#0a0e16;--panel:#0f141e;--panel2:#151b27;--elev:#1a2230;--border:#222b3a;--border2:#2c3648;--text:#e9edf6;--muted:#96a1b5;--faint:#697587;
+    --accent:#2f6bff;--accent2:#6d9bff;--accentSoft:rgba(47,107,255,.16);
+    --good:#33c27f;--goodSoft:rgba(51,194,127,.16);--bad:#ff5c6c;--badSoft:rgba(255,92,108,.14);--warn:#f5b740;
+  }
+  #qapp[data-theme="light"]{
+    --bg:#eef2f9;--panel:#ffffff;--panel2:#f4f7fd;--elev:#ffffff;--border:#e4e9f2;--border2:#d6deea;
+    --text:#141d33;--muted:#5b6884;--faint:#8593aa;--accentSoft:rgba(47,107,255,.10);
+    --goodSoft:rgba(51,194,127,.12);--badSoft:rgba(255,92,108,.10);
+  }
+  #qapp[data-theme="dark"]::before{
+    content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      linear-gradient(rgba(8,11,18,.62), rgba(8,11,18,.82)),
+      url('assets/bg-dark.webp') center/cover no-repeat fixed;
+  }
+  #qapp[data-theme="dark"]>header,#qapp[data-theme="dark"]>div,#qapp[data-theme="dark"]>main{position:relative;z-index:1}
+  .scroll{scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+  .scroll::-webkit-scrollbar{width:9px;height:9px}
+  .scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
+  .scroll::-webkit-scrollbar-track{background:transparent}
+  @keyframes qfade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes qdot{0%,100%{opacity:1}50%{opacity:.3}}
+  input,button,textarea{font-family:inherit}
+  input::placeholder{color:var(--faint)}
+  #qapp image-slot{color:#8fa0bb;font-size:10px;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
+  #qapp image-slot::part(empty){padding:6px;gap:3px}
+</style>
+<script src="image-slot.js"></script>
+</helmet>
+
+<div id="qapp" data-theme="{{ theme }}" ref="{{ setRoot }}" style="height:100vh;display:flex;flex-direction:column;background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;overflow:hidden;letter-spacing:-.01em">
+
+  <!-- ===================== TOP NAV ===================== -->
+  <header style="display:flex;align-items:center;gap:16px;height:60px;padding:0 18px;border-bottom:1px solid var(--border);background:var(--panel);flex-shrink:0;z-index:10">
+    <div style="display:flex;align-items:center;gap:11px;cursor:pointer">
+      <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;box-shadow:0 6px 16px var(--accentSoft)">Q</div>
+      <div style="line-height:1.15">
+        <div style="font-weight:700;font-size:15px">Quasar University</div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--good)"><span style="width:6px;height:6px;border-radius:50%;background:var(--good);animation:qdot 2s infinite"></span>1,204 online</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="2.4" style="margin-left:2px"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+
+    <nav style="display:flex;gap:3px;margin-left:10px">
+      <sc-for list="{{ navView }}" as="n" hint-placeholder-count="4">
+        <div onClick="{{ n.onClick }}" style="{{ n.style }}">{{ n.label }}</div>
+      </sc-for>
+    </nav>
+
+    <div style="flex:1"></div>
+
+    <div style="display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:9px 13px;width:280px;color:var(--faint)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <span style="font-size:13px">Search courses, lessons…</span>
+    </div>
+
+    <button onClick="{{ toggleAdmin }}" style="{{ adminBtnStyle }}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v5c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V6z"/></svg>
+      {{ adminBtnLabel }}
+    </button>
+
+    <button onClick="{{ toggleTheme }}" style="width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center" title="Toggle theme">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ true }}">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8L6 18M18 6l1.8-1.8"/></svg>
+      </sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ false }}">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14.5A8 8 0 119.5 4 6.5 6.5 0 0020 14.5z"/></svg>
+      </sc-if>
+    </button>
+
+    <button style="position:relative;width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg>
+      <span style="position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--bad);border:1.5px solid var(--panel2)"></span>
+    </button>
+
+    <div style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#5b8cff,#2f6bff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;cursor:pointer">K</div>
+  </header>
+
+  <!-- ===================== PLAYER ===================== -->
+  <sc-if value="{{ isPlayer }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;display:flex;min-height:0">
+
+    <!-- ===== LEFT: lesson list ===== -->
+    <aside style="width:336px;flex-shrink:0;border-right:1px solid var(--border);background:var(--panel);display:flex;flex-direction:column;min-height:0">
+      <div style="padding:16px 18px 14px;border-bottom:1px solid var(--border)">
+        <div onClick="{{ goToCourses }}" style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;margin-bottom:10px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg>All courses
+        </div>
+        <div style="font-size:17px;font-weight:700;line-height:1.2">FiveM — Zero to Hero</div>
+        <div style="font-size:12.5px;color:var(--muted);margin-top:3px">Server development · Lua · Business & AI</div>
+
+        <div style="margin-top:14px;background:var(--panel2);border:1px solid var(--border);border-radius:13px;padding:13px 14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+            <span style="font-size:12.5px;font-weight:600;color:var(--muted)">Your progress</span>
+            <span style="font-size:14px;font-weight:800;color:var(--accent)">{{ progressPct }}%</span>
+          </div>
+          <div style="height:7px;border-radius:5px;background:var(--border);overflow:hidden">
+            <div style="height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:{{ progressPct }}%"></div>
+          </div>
+          <div style="font-size:11.5px;color:var(--faint);margin-top:8px">{{ lessonsDone }} of {{ lessonsTotal }} lessons · ~{{ hoursLeft }} left</div>
+        </div>
+      </div>
+
+      <div class="scroll" style="flex:1;overflow-y:auto;padding:10px 12px 24px">
+        <sc-for list="{{ chaptersView }}" as="ch" hint-placeholder-count="3">
+          <div style="padding:14px 6px 8px;display:flex;align-items:center;gap:8px">
+            <span style="font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--faint)">{{ ch.title }}</span>
+            <span style="flex:1;height:1px;background:var(--border)"></span>
+            <span style="font-size:11px;color:var(--faint)">{{ ch.count }}</span>
+          </div>
+          <sc-if value="{{ showThumbs }}" hint-placeholder-val="{{ true }}">
+            <div style="margin:0 4px 12px;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:#0d1320">
+              <image-slot id="{{ ch.thumbId }}" style="width:100%;height:74px;display:block" shape="rect" placeholder="Chapter banner (optional)"></image-slot>
+            </div>
+          </sc-if>
+          <sc-for list="{{ ch.lessons }}" as="lesson" hint-placeholder-count="3">
+            <div onClick="{{ lesson.onClick }}" style="{{ lesson.rowStyle }}">
+              <sc-if value="{{ showThumbs }}" hint-placeholder-val="{{ true }}">
+                <div style="{{ lesson.posterStyle }}">
+                  <span style="{{ lesson.playStyle }}">{{ lesson.typeIcon }}</span>
+                  <span style="{{ lesson.durBadgeStyle }}">{{ lesson.badgeText }}</span>
+                  <sc-if value="{{ lesson.showStatus }}" hint-placeholder-val="{{ false }}">
+                    <span style="{{ lesson.statusStyle }}">{{ lesson.glyph }}</span>
+                  </sc-if>
+                </div>
+              </sc-if>
+              <sc-if value="{{ noThumbs }}" hint-placeholder-val="{{ false }}">
+                <div style="{{ lesson.badgeStyle }}">{{ lesson.glyph }}</div>
+              </sc-if>
+              <div style="flex:1;min-width:0">
+                <div style="{{ lesson.titleStyle }}">{{ lesson.title }}</div>
+                <div style="font-size:11px;color:var(--faint);margin-top:3px">{{ lesson.meta }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </sc-for>
+      </div>
+    </aside>
+
+    <!-- ===== RIGHT: content ===== -->
+    <main class="scroll" style="flex:1;overflow-y:auto;min-width:0">
+      <div style="max-width:1140px;margin:0 auto;padding:24px 34px 80px;animation:qfade .35s ease">
+
+        <!-- breadcrumb + actions -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-size:12.5px;font-weight:700;color:var(--accent)">{{ activeLesson.chapterLabel }}</span>
+          <span style="font-size:12.5px;color:var(--faint)">·</span>
+          <span style="font-size:12.5px;color:var(--muted)">{{ activeLesson.dur }}</span>
+          <div style="flex:1"></div>
+          <button onClick="{{ markComplete }}" style="{{ completeBtnStyle }}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l4.5 4.5L19 7"/></svg>
+            {{ completeLabel }}
+          </button>
+          <button style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:9px 13px;cursor:pointer">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1.5-1.5"/></svg>
+            Copy link
+          </button>
+        </div>
+
+        <h1 style="font-size:30px;font-weight:800;line-height:1.15;margin:0 0 14px;letter-spacing:-.02em">{{ activeLesson.title }}</h1>
+
+        <!-- ===== VIDEO ===== -->
+        <div style="position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:radial-gradient(130% 130% at 50% -10%,#243755,#070b13);border:1px solid var(--border);box-shadow:0 26px 60px rgba(0,0,0,.4)">
+          <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:42px 42px;opacity:.5"></div>
+          <div style="position:absolute;top:16px;left:18px;display:flex;align-items:center;gap:8px">
+            <span style="display:flex;align-items:center;gap:6px;background:rgba(255,92,108,.92);color:#fff;font-size:11px;font-weight:800;letter-spacing:.04em;padding:5px 9px;border-radius:7px">
+              <span style="width:6px;height:6px;border-radius:50%;background:#fff;animation:qdot 1.4s infinite"></span>1440P · 60FPS
+            </span>
+            <span style="color:rgba(255,255,255,.85);font-size:12px;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,.6)">{{ videoSub }}</span>
+          </div>
+
+          <button onClick="{{ togglePlay }}" style="position:absolute;inset:0;margin:auto;width:78px;height:78px;border-radius:50%;border:none;cursor:pointer;background:rgba(47,107,255,.95);box-shadow:0 12px 40px rgba(47,107,255,.55);display:flex;align-items:center;justify-content:center">
+            <sc-if value="{{ playing }}" hint-placeholder-val="{{ false }}">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+            </sc-if>
+            <sc-if value="{{ paused }}" hint-placeholder-val="{{ true }}">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" style="margin-left:5px"><path d="M7 5l13 7-13 7z"/></svg>
+            </sc-if>
+          </button>
+
+          <!-- controls bar -->
+          <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 16px 13px;background:linear-gradient(transparent,rgba(0,0,0,.72))">
+            <div style="height:5px;border-radius:4px;background:rgba(255,255,255,.22);margin-bottom:11px;position:relative">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:{{ videoPct }}%;border-radius:4px;background:var(--accent)"></div>
+              <div style="position:absolute;top:50%;left:{{ videoPct }}%;transform:translate(-50%,-50%);width:13px;height:13px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;color:#fff">
+              <svg onClick="{{ togglePlay }}" width="20" height="20" viewBox="0 0 24 24" fill="#fff" style="cursor:pointer"><path d="M7 5l13 7-13 7z"/></svg>
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/></svg>
+              <span style="font-size:12.5px;font-weight:600">{{ videoTime }} / {{ activeLesson.dur }}</span>
+              <div style="flex:1"></div>
+              <span style="font-size:12px;font-weight:700;border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:2px 7px;cursor:pointer">1.0×</span>
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="cursor:pointer"><path d="M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z"/><path d="M19.4 13a7.6 7.6 0 000-2l2-1.5-2-3.4-2.3 1a7.6 7.6 0 00-1.7-1l-.3-2.5h-4l-.3 2.5a7.6 7.6 0 00-1.7 1l-2.3-1-2 3.4 2 1.5a7.6 7.6 0 000 2l-2 1.5 2 3.4 2.3-1a7.6 7.6 0 001.7 1l.3 2.5h4l.3-2.5a7.6 7.6 0 001.7-1l2.3 1 2-3.4z"/></svg>
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="cursor:pointer"><path d="M8 3H5a2 2 0 00-2 2v3M16 3h3a2 2 0 012 2v3M8 21H5a2 2 0 01-2-2v-3M16 21h3a2 2 0 002-2v-3"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- meta strip -->
+        <div style="display:flex;align-items:center;gap:14px;margin:16px 0 4px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#ff5c6c,#ff9a5c);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px">R</div>
+            <div style="line-height:1.2"><div style="font-size:13.5px;font-weight:700">RED</div><div style="font-size:11.5px;color:var(--faint)">Lead Instructor</div></div>
+          </div>
+          <span style="width:1px;height:26px;background:var(--border)"></span>
+          <span style="font-size:12.5px;color:var(--muted)">Updated {{ activeLesson.updated }}</span>
+          <span style="width:1px;height:26px;background:var(--border)"></span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--good);font-weight:600"><span style="width:8px;height:8px;border-radius:50%;background:var(--good)"></span>Unlocks immediately</span>
+        </div>
+
+        <!-- ===== TABS ===== -->
+        <div style="display:flex;gap:24px;border-bottom:1px solid var(--border);margin:20px 0 22px">
+          <sc-for list="{{ tabsView }}" as="tab" hint-placeholder-count="5">
+            <div onClick="{{ tab.onClick }}" style="{{ tab.style }}">
+              {{ tab.label }}
+              <sc-if value="{{ tab.showCount }}" hint-placeholder-val="{{ false }}"><span style="margin-left:6px;font-size:11px;font-weight:700;background:var(--accentSoft);color:var(--accent);padding:1px 7px;border-radius:20px">{{ tab.count }}</span></sc-if>
+            </div>
+          </sc-for>
+        </div>
+
+        <!-- ===== GUIDE ===== -->
+        <sc-if value="{{ isGuide }}" hint-placeholder-val="{{ true }}">
+          <div style="max-width:760px;animation:qfade .3s ease">
+            <h2 style="font-size:20px;font-weight:800;margin:0 0 12px">{{ activeLesson.guideTitle }}</h2>
+            <p style="font-size:15.5px;line-height:1.7;color:var(--muted);margin:0 0 18px;text-wrap:pretty">Welcome! This lesson shows how FiveM scripts work, why Lua is used, and how client ↔ server events communicate. Follow the steps below and grab the downloads in the <strong style="color:var(--text)">Files</strong> tab.</p>
+
+            <div style="background:var(--accentSoft);border:1px solid rgba(47,107,255,.3);border-radius:14px;padding:16px 18px;margin-bottom:18px">
+              <div style="font-size:13px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">What you'll learn</div>
+              <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px;font-size:14.5px;line-height:1.5;color:var(--text)">
+                <li>Client vs server scopes — and where each <code style="font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--panel2);padding:1px 6px;border-radius:5px;color:var(--accent2)">print()</code> shows up</li>
+                <li>Create a minimal resource with <code style="font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--panel2);padding:1px 6px;border-radius:5px;color:var(--accent2)">fxmanifest.lua</code></li>
+                <li>Register your first command with <code style="font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--panel2);padding:1px 6px;border-radius:5px;color:var(--accent2)">RegisterCommand</code></li>
+                <li>Send events client→server and server→client</li>
+                <li>Handle async with <code style="font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--panel2);padding:1px 6px;border-radius:5px;color:var(--accent2)">Citizen.Wait</code> to avoid <code style="font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--panel2);padding:1px 6px;border-radius:5px;color:var(--accent2)">nil</code> surprises</li>
+              </ul>
+            </div>
+
+            <h3 style="font-size:16px;font-weight:800;margin:22px 0 12px">Build it: a minimal resource</h3>
+
+            <div style="border:1px solid var(--border);border-radius:13px;overflow:hidden;background:var(--panel2);margin-bottom:14px">
+              <div style="display:flex;align-items:center;gap:9px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--panel)">
+                <span style="display:flex;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#ff5c6c"></span><span style="width:10px;height:10px;border-radius:50%;background:#f5b740"></span><span style="width:10px;height:10px;border-radius:50%;background:#33c27f"></span></span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted)">fxmanifest.lua</span>
+                <div style="flex:1"></div>
+                <span style="font-size:11.5px;font-weight:600;color:var(--faint);cursor:pointer">Copy</span>
+              </div>
+              <pre class="scroll" style="margin:0;padding:15px 16px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.65;color:var(--text)"><span style="color:var(--accent2)">fx_version</span> <span style="color:var(--good)">'cerulean'</span>
+<span style="color:var(--accent2)">game</span> <span style="color:var(--good)">'gta5'</span>
+
+<span style="color:var(--accent2)">author</span> <span style="color:var(--good)">'Quasar University'</span>
+<span style="color:var(--accent2)">description</span> <span style="color:var(--good)">'Zero to Hero — Lesson 1'</span>
+
+<span style="color:var(--accent2)">client_script</span> <span style="color:var(--good)">'client.lua'</span>
+<span style="color:var(--accent2)">server_script</span> <span style="color:var(--good)">'server.lua'</span></pre>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div style="border:1px solid var(--border);border-radius:13px;overflow:hidden;background:var(--panel2)">
+                <div style="display:flex;align-items:center;gap:9px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--panel)"><span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted)">client.lua</span></div>
+                <pre class="scroll" style="margin:0;padding:15px 16px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.65;color:var(--text)"><span style="color:var(--accent2)">RegisterCommand</span>(<span style="color:var(--good)">'hello'</span>, <span style="color:var(--accent2)">function</span>()
+  <span style="color:var(--accent2)">TriggerServerEvent</span>(<span style="color:var(--good)">'zh:hello'</span>)
+<span style="color:var(--accent2)">end</span>)
+
+<span style="color:var(--faint)">-- server replies to us</span>
+<span style="color:var(--accent2)">RegisterNetEvent</span>(<span style="color:var(--good)">'zh:reply'</span>, <span style="color:var(--accent2)">function</span>(msg)
+  <span style="color:var(--accent2)">print</span>(msg)
+<span style="color:var(--accent2)">end</span>)</pre>
+              </div>
+              <div style="border:1px solid var(--border);border-radius:13px;overflow:hidden;background:var(--panel2)">
+                <div style="display:flex;align-items:center;gap:9px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--panel)"><span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted)">server.lua</span></div>
+                <pre class="scroll" style="margin:0;padding:15px 16px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.65;color:var(--text)"><span style="color:var(--accent2)">RegisterNetEvent</span>(<span style="color:var(--good)">'zh:hello'</span>, <span style="color:var(--accent2)">function</span>()
+  <span style="color:var(--accent2)">local</span> src = source
+  <span style="color:var(--accent2)">TriggerClientEvent</span>(<span style="color:var(--good)">'zh:reply'</span>,
+    src, <span style="color:var(--good)">'Hello from server!'</span>)
+<span style="color:var(--accent2)">end</span>)</pre>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:flex-start;background:var(--goodSoft);border:1px solid rgba(51,194,127,.3);border-radius:13px;padding:14px 16px;margin-top:18px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--good)" stroke-width="2.2" style="flex-shrink:0;margin-top:1px"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0012 2z"/></svg>
+              <div style="font-size:14px;line-height:1.55;color:var(--text)"><strong>Tip:</strong> always declare <code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel);padding:1px 6px;border-radius:5px;color:var(--accent2)">local</code> — global vars add a small delay on calls. Test in-game with <code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel);padding:1px 6px;border-radius:5px;color:var(--accent2)">/hello</code> and watch the server console.</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===== SUMMARY / SOP ===== -->
+        <sc-if value="{{ isSummary }}" hint-placeholder-val="{{ false }}">
+          <div style="max-width:760px;animation:qfade .3s ease">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--accentSoft);padding:4px 9px;border-radius:6px">SOP</span>
+              <h2 style="font-size:20px;font-weight:800;margin:0">Summary &amp; Standard Operating Procedure</h2>
+            </div>
+            <p style="font-size:14.5px;line-height:1.65;color:var(--muted);margin:0 0 22px;text-wrap:pretty">The repeatable checklist for this lesson. Follow it top-to-bottom whenever you spin up a new resource — it captures everything covered in the video in the exact order you should do it.</p>
+
+            <!-- TL;DR -->
+            <div style="background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:22px">
+              <div style="font-size:12px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">In one line</div>
+              <p style="margin:0;font-size:15px;line-height:1.6;color:var(--text)">A FiveM resource is a folder with an <code style="font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--panel);padding:1px 6px;border-radius:5px;color:var(--accent2)">fxmanifest.lua</code> that registers client &amp; server scripts; the client triggers events, the server listens and replies.</p>
+            </div>
+
+            <!-- numbered SOP -->
+            <div style="display:flex;flex-direction:column;gap:0">
+              <sc-for list="{{ sopSteps }}" as="step" hint-placeholder-count="5">
+                <div style="display:flex;gap:16px;padding:4px 0 18px;position:relative">
+                  <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0">
+                    <span style="width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center">{{ step.n }}</span>
+                    <span style="flex:1;width:2px;background:var(--border);margin-top:6px"></span>
+                  </div>
+                  <div style="padding-top:3px">
+                    <div style="font-size:15.5px;font-weight:700;line-height:1.35">{{ step.title }}</div>
+                    <div style="font-size:14px;line-height:1.6;color:var(--muted);margin-top:4px;text-wrap:pretty">{{ step.body }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:flex-start;background:var(--badSoft);border:1px solid rgba(255,92,108,.3);border-radius:13px;padding:14px 16px;margin-top:4px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--bad)" stroke-width="2.2" style="flex-shrink:0;margin-top:1px"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+              <div style="font-size:14px;line-height:1.55;color:var(--text)"><strong>Common mistake:</strong> reading a value before <code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel);padding:1px 6px;border-radius:5px;color:var(--accent2)">Citizen.Wait</code> lets the engine catch up — that's where most <code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--panel);padding:1px 6px;border-radius:5px;color:var(--accent2)">nil</code> errors come from.</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===== TRANSCRIPT ===== -->
+        <sc-if value="{{ isTranscript }}" hint-placeholder-val="{{ false }}">
+          <div style="max-width:760px;animation:qfade .3s ease">
+            <div style="display:flex;gap:7px;margin-bottom:18px">
+              <sc-for list="{{ langsView }}" as="lg" hint-placeholder-count="4">
+                <button onClick="{{ lg.onClick }}" style="{{ lg.style }}">{{ lg.label }}</button>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <sc-for list="{{ transcriptView }}" as="ln" hint-placeholder-count="6">
+                <div onClick="{{ ln.onClick }}" style="display:flex;gap:14px;padding:11px 12px;border-radius:10px;cursor:pointer" style-hover="background:var(--panel2)">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:600;color:var(--accent);flex-shrink:0;padding-top:1px">{{ ln.t }}</span>
+                  <span style="font-size:14.5px;line-height:1.55;color:var(--text)">{{ ln.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===== QUIZ ===== -->
+        <sc-if value="{{ isQuiz }}" hint-placeholder-val="{{ false }}">
+          <div style="max-width:720px;animation:qfade .3s ease">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+              <div><h2 style="font-size:20px;font-weight:800;margin:0">Test your knowledge</h2><div style="font-size:13px;color:var(--muted);margin-top:3px">4 questions · pass with 3 correct</div></div>
+              <sc-if value="{{ quizSubmitted }}" hint-placeholder-val="{{ false }}">
+                <div style="{{ scoreBadgeStyle }}">{{ score }}/{{ quizTotal }} correct</div>
+              </sc-if>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <sc-for list="{{ quizView }}" as="q" hint-placeholder-count="4">
+                <div style="border:1px solid var(--border);border-radius:14px;padding:18px;background:var(--panel)">
+                  <div style="display:flex;gap:10px;margin-bottom:14px">
+                    <span style="font-size:13px;font-weight:800;color:var(--accent)">{{ q.num }}</span>
+                    <span style="font-size:15.5px;font-weight:700;line-height:1.4">{{ q.q }}</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:9px">
+                    <sc-for list="{{ q.choicesView }}" as="c" hint-placeholder-count="4">
+                      <div onClick="{{ c.onClick }}" style="{{ c.style }}">
+                        <span style="{{ c.markStyle }}">{{ c.mark }}</span>
+                        <span style="font-size:14px;font-weight:500">{{ c.text }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="display:flex;gap:12px;margin-top:20px">
+              <sc-if value="{{ quizOpen }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ submitQuiz }}" style="{{ submitStyle }}">Submit answers</button>
+              </sc-if>
+              <sc-if value="{{ quizSubmitted }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ resetQuiz }}" style="font-size:14px;font-weight:700;color:var(--text);background:var(--panel2);border:1px solid var(--border);border-radius:11px;padding:13px 22px;cursor:pointer">Try again</button>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- ===== FILES ===== -->
+        <sc-if value="{{ isFiles }}" hint-placeholder-val="{{ false }}">
+          <div style="max-width:760px;animation:qfade .3s ease">
+            <h2 style="font-size:20px;font-weight:800;margin:0 0 4px">Attachments</h2>
+            <p style="font-size:13.5px;color:var(--muted);margin:0 0 18px">Slides, written guides and transcripts for this lesson.</p>
+            <div style="display:flex;flex-direction:column;gap:11px">
+              <sc-for list="{{ filesView }}" as="f" hint-placeholder-count="5">
+                <div style="display:flex;align-items:center;gap:14px;border:1px solid var(--border);border-radius:13px;padding:14px 16px;background:var(--panel);cursor:pointer" style-hover="border-color:var(--accent)">
+                  <div style="{{ f.iconStyle }}">{{ f.kind }}</div>
+                  <div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:700">{{ f.name }}</div><div style="font-size:12px;color:var(--faint);margin-top:2px">{{ f.meta }}</div></div>
+                  <button style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--accent);background:var(--accentSoft);border:none;border-radius:10px;padding:9px 14px;cursor:pointer">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"/></svg>Download
+                  </button>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        </sc-if>
+
+      </div>
+    </main>
+  </div>
+  </sc-if>
+
+  <!-- ===================== COURSES (landing) ===================== -->
+  <sc-if value="{{ isCourses }}" hint-placeholder-val="{{ true }}">
+  <main class="scroll" style="flex:1;overflow-y:auto;min-height:0">
+    <div style="max-width:1180px;margin:0 auto;padding:30px 34px 80px;animation:qfade .35s ease">
+      <h1 style="font-size:28px;font-weight:800;margin:0 0 4px;letter-spacing:-.02em">Welcome back, Kishi</h1>
+      <p style="font-size:14.5px;color:var(--muted);margin:0 0 26px">Pick up where you left off, or explore something new.</p>
+
+      <!-- continue learning -->
+      <div onClick="{{ goToPlayer }}" style="display:flex;gap:0;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--panel);cursor:pointer;margin-bottom:38px" style-hover="border-color:var(--accent)">
+        <div style="width:300px;flex-shrink:0;background:#0d1320;position:relative">
+          <image-slot id="thumb-resume" style="width:100%;height:100%;display:block" shape="rect" placeholder="Drop course thumbnail"></image-slot>
+        </div>
+        <div style="flex:1;padding:22px 26px;display:flex;flex-direction:column;justify-content:center">
+          <div style="font-size:11.5px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:9px">Continue learning</div>
+          <div style="font-size:19px;font-weight:800;letter-spacing:-.01em">Master LUA — Zero to Hero</div>
+          <div style="font-size:13px;color:var(--muted);margin:4px 0 16px">Chapter 2 · Events, Threads &amp; State · Lesson 4 of 24</div>
+          <div style="display:flex;align-items:center;gap:16px;max-width:440px">
+            <div style="flex:1;height:7px;border-radius:5px;background:var(--border);overflow:hidden"><div style="height:100%;width:33%;border-radius:5px;background:var(--accent)"></div></div>
+            <span style="font-size:13px;font-weight:700;color:var(--muted)">33%</span>
+            <span style="display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:700;color:#fff;background:var(--accent);padding:9px 17px;border-radius:10px">Resume<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 6l6 6-6 6"/></svg></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- section header (reference style) -->
+      <div style="display:flex;align-items:center;gap:13px;border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:22px">
+        <span style="width:4px;height:26px;border-radius:3px;background:var(--accent)"></span>
+        <span style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px var(--accentSoft)">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="#fff"><path d="M12 3L1 8l11 5 9-4.09V15h2V8L12 3zM5 13.18v3L12 20l7-3.82v-3L12 17l-7-3.82z"/></svg>
+        </span>
+        <span style="font-size:19px;font-weight:800;letter-spacing:-.01em">Your courses</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:22px">
+        <sc-for list="{{ enrolledCourses }}" as="c" hint-placeholder-count="3">
+          <div onClick="{{ c.onClick }}" style="border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--panel);cursor:pointer;transition:border-color .15s,transform .15s" style-hover="border-color:var(--accent)">
+            <div style="background:#0d1320;position:relative">
+              <image-slot id="{{ c.thumbId }}" style="width:100%;aspect-ratio:16/9;display:block" shape="rect" placeholder="Drop course thumbnail"></image-slot>
+            </div>
+            <div style="padding:16px 17px 17px">
+              <div style="display:flex;align-items:flex-start;gap:10px">
+                <div style="font-size:16px;font-weight:700;line-height:1.3;flex:1">{{ c.title }}</div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--faint)" style="flex-shrink:0;margin-top:2px;cursor:pointer"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>
+              </div>
+              <div style="font-size:13px;line-height:1.5;color:var(--muted);margin:8px 0 14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ c.desc }}</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--faint);font-weight:600;margin-bottom:13px">
+                <span>{{ c.chapters }} chapters</span><span>·</span><span>{{ c.lessonsLabel }}</span><span>·</span><span>{{ c.hours }}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:11px"><div style="flex:1;height:6px;border-radius:4px;background:var(--border);overflow:hidden"><div style="height:100%;border-radius:4px;background:var(--accent);width:{{ c.progress }}%"></div></div><span style="font-size:12px;font-weight:700;color:var(--muted)">{{ c.progress }}%</span></div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <!-- explore -->
+      <div style="display:flex;align-items:center;gap:13px;margin:46px 0 8px">
+        <span style="width:4px;height:26px;border-radius:3px;background:var(--accent)"></span>
+        <span style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px var(--accentSoft)">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="#fff"><path d="M12 3L1 8l11 5 9-4.09V15h2V8L12 3zM5 13.18v3L12 20l7-3.82v-3L12 17l-7-3.82z"/></svg>
+        </span>
+        <h1 style="font-size:22px;font-weight:800;margin:0;letter-spacing:-.01em">Explore courses</h1>
+      </div>
+      <p style="font-size:14px;color:var(--muted);margin:0 0 22px;padding-left:51px">Scripting, business, marketing and AI — everything to run a serious FiveM server.</p>
+
+      <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:24px">
+        <sc-for list="{{ catView }}" as="cat" hint-placeholder-count="6">
+          <button onClick="{{ cat.onClick }}" style="{{ cat.style }}">{{ cat.label }}</button>
+        </sc-for>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:22px">
+        <sc-for list="{{ filteredCourses }}" as="c" hint-placeholder-count="6">
+          <div onClick="{{ c.onClick }}" style="border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--panel);cursor:pointer;display:flex;flex-direction:column" style-hover="border-color:var(--accent)">
+            <div style="background:#0d1320;position:relative">
+              <image-slot id="{{ c.thumbId }}" style="width:100%;aspect-ratio:16/9;display:block" shape="rect" placeholder="Drop course thumbnail"></image-slot>
+              <span style="position:absolute;bottom:11px;left:12px;font-size:10.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.42);padding:3px 9px;border-radius:20px;backdrop-filter:blur(4px)">{{ c.cat }}</span>
+              <span style="position:absolute;top:11px;right:12px;font-size:10.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.42);padding:3px 9px;border-radius:20px;backdrop-filter:blur(4px)">{{ c.level }}</span>
+            </div>
+            <div style="padding:15px 16px;display:flex;flex-direction:column;flex:1">
+              <div style="font-size:15.5px;font-weight:700;line-height:1.25">{{ c.title }}</div>
+              <div style="display:flex;align-items:center;gap:8px;margin:9px 0 12px">
+                <span style="{{ c.instrStyle }}">{{ c.instrInitial }}</span>
+                <span style="font-size:12.5px;color:var(--muted);font-weight:600">{{ c.instructor }}</span>
+              </div>
+              <div style="font-size:12px;color:var(--faint);margin-bottom:14px">{{ c.meta }}</div>
+              <div style="flex:1"></div>
+              <sc-if value="{{ c.enrolled }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:6px;border-radius:4px;background:var(--border);overflow:hidden"><div style="height:100%;border-radius:4px;background:var(--accent);width:{{ c.progress }}%"></div></div><span style="font-size:12px;font-weight:700;color:var(--accent)">In progress</span></div>
+              </sc-if>
+              <sc-if value="{{ c.notEnrolled }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12.5px;color:var(--faint)">{{ c.students }} enrolled</span><span style="font-size:12.5px;font-weight:700;color:var(--accent);background:var(--accentSoft);padding:7px 13px;border-radius:9px">Enroll</span></div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ===================== ADMIN EDITOR ===================== -->
+  <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+  <main style="flex:1;display:flex;flex-direction:column;min-height:0">
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 24px;border-bottom:1px solid var(--border);background:var(--panel);flex-shrink:0">
+      <span style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--accentSoft);padding:4px 9px;border-radius:6px">Editing</span>
+      <span style="font-size:15px;font-weight:700">FiveM — Zero to Hero</span>
+      <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--warn);font-weight:600;margin-left:4px"><span style="width:7px;height:7px;border-radius:50%;background:var(--warn)"></span>Unpublished changes</span>
+      <div style="flex:1"></div>
+      <button onClick="{{ goToPlayer }}" style="font-size:13px;font-weight:700;color:var(--muted);background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:9px 15px;cursor:pointer">Preview as student</button>
+      <button style="font-size:13px;font-weight:700;color:var(--text);background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:9px 15px;cursor:pointer">Save draft</button>
+      <button style="font-size:13px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;padding:9px 18px;cursor:pointer">Publish</button>
+    </div>
+    <div style="flex:1;display:flex;min-height:0">
+      <!-- structure tree -->
+      <aside class="scroll" style="width:330px;flex-shrink:0;border-right:1px solid var(--border);background:var(--panel);overflow-y:auto;padding:16px 14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span style="font-size:13px;font-weight:800">Course structure</span><span style="font-size:12px;font-weight:700;color:var(--accent);cursor:pointer">+ Chapter</span></div>
+        <sc-for list="{{ adminChaptersView }}" as="ch" hint-placeholder-count="3">
+          <div style="margin-bottom:14px">
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 6px;margin-bottom:4px">
+              <span style="color:var(--faint);font-size:13px;cursor:grab">⠿</span>
+              <span style="font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);flex:1">{{ ch.title }}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="2"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+            </div>
+            <sc-for list="{{ ch.lessons }}" as="l" hint-placeholder-count="3">
+              <div onClick="{{ l.onClick }}" style="{{ l.rowStyle }}">
+                <span style="color:var(--faint);font-size:12px;cursor:grab">⠿</span>
+                <span style="{{ l.iconStyle }}">{{ l.glyph }}</span>
+                <span style="font-size:13px;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l.title }}</span>
+              </div>
+            </sc-for>
+            <div style="display:flex;align-items:center;gap:7px;padding:8px 10px;margin-top:3px;border:1.5px dashed var(--border2);border-radius:10px;color:var(--faint);font-size:12.5px;font-weight:600;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>Add lesson</div>
+          </div>
+        </sc-for>
+      </aside>
+
+      <!-- lesson form -->
+      <div class="scroll" style="flex:1;overflow-y:auto;min-width:0">
+        <div style="max-width:720px;padding:26px 32px 80px">
+          <div style="font-size:12.5px;font-weight:700;color:var(--accent);margin-bottom:6px">Edit lesson</div>
+          <input value="{{ adminDraftTitle }}" onChange="{{ onAdminTitle }}" style="width:100%;font-size:22px;font-weight:800;color:var(--text);background:transparent;border:none;border-bottom:2px solid var(--border);padding:6px 0 12px;outline:none;letter-spacing:-.02em" />
+
+          <div style="display:flex;gap:9px;margin:20px 0 24px">
+            <sc-for list="{{ lessonTypeView }}" as="tp" hint-placeholder-count="3">
+              <button onClick="{{ tp.onClick }}" style="{{ tp.style }}">{{ tp.label }}</button>
+            </sc-for>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:13px;font-weight:700">Lesson sections</span>
+            <span style="font-size:11.5px;color:var(--faint)">Toggle off to remove from the lesson</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin:10px 0 24px">
+            <sc-for list="{{ sectionsAdminView }}" as="sec" hint-placeholder-count="6">
+              <div style="{{ sec.rowStyle }}">
+                <span style="color:var(--faint);font-size:13px;cursor:grab">⠿</span>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:13.5px;font-weight:700">{{ sec.label }}</div>
+                  <div style="font-size:11.5px;color:var(--faint);margin-top:1px">{{ sec.hint }}</div>
+                </div>
+                <div onClick="{{ sec.onToggle }}" style="{{ sec.switchStyle }}"><span style="{{ sec.knobStyle }}"></span></div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:13px;font-weight:700;margin-bottom:9px">Video</div>
+          <div style="border:1.5px dashed var(--border2);border-radius:14px;padding:30px;text-align:center;background:var(--panel2);margin-bottom:24px;cursor:pointer">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" style="margin-bottom:8px"><path d="M12 16V4m0 0L7 9m5-5l5 5"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+            <div style="font-size:14px;font-weight:700">Drag a video here or <span style="color:var(--accent)">browse</span></div>
+            <div style="font-size:12px;color:var(--faint);margin-top:4px">MP4 or MOV · up to 8 GB · or paste a stream link</div>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;border:1px solid var(--border);border-radius:12px;padding:13px 16px;background:var(--panel);margin-bottom:18px">
+            <div><div style="font-size:13.5px;font-weight:700">Show thumbnails in lesson list</div><div style="font-size:12px;color:var(--faint);margin-top:2px">Off shows a compact icon list instead</div></div>
+            <div onClick="{{ toggleThumbs }}" style="{{ thumbsToggleStyle }}"><span style="{{ thumbsKnobStyle }}"></span></div>
+          </div>
+
+          <div style="font-size:13px;font-weight:700;margin-bottom:3px">Thumbnail <span style="font-weight:500;color:var(--faint)">(optional)</span></div>
+          <div style="font-size:12px;color:var(--faint);margin-bottom:9px">Leave empty to use a preview of the lesson video.</div>
+          <div style="display:flex;gap:13px;align-items:center;margin-bottom:24px">
+            <div style="width:150px;height:84px;flex-shrink:0;border-radius:11px;overflow:hidden;border:1px solid var(--border);background:#0d1320">
+              <image-slot id="admin-thumb" style="width:100%;height:100%;display:block" shape="rect" placeholder="Custom thumbnail"></image-slot>
+            </div>
+            <div style="font-size:12.5px;color:var(--muted);line-height:1.5">Drop a 16:9 image to override the auto video preview shown beside this lesson.</div>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font-size:13px;font-weight:700">Attachments</span><span style="font-size:12px;font-weight:700;color:var(--accent);cursor:pointer">+ Upload</span></div>
+          <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:24px">
+            <sc-for list="{{ filesView }}" as="f" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:12px;border:1px solid var(--border);border-radius:11px;padding:11px 14px;background:var(--panel)">
+                <div style="{{ f.iconStyle }}">{{ f.kind }}</div>
+                <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.name }}</div></div>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="2" style="cursor:pointer"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="font-size:13px;font-weight:700;margin-bottom:9px">Written guide</div>
+          <textarea placeholder="Write the lesson notes, code snippets and steps students should follow…" style="width:100%;min-height:120px;resize:vertical;font-size:14px;line-height:1.6;color:var(--text);background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:14px;outline:none">Welcome! This lesson shows how FiveM scripts work, why Lua is used, and how client ↔ server events communicate.</textarea>
+
+          <div style="font-size:13px;font-weight:700;margin:20px 0 9px">Summary / SOP</div>
+          <textarea placeholder="Write the standard operating procedure — the repeatable checklist students follow…" style="width:100%;min-height:110px;resize:vertical;font-size:14px;line-height:1.6;color:var(--text);background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:14px;outline:none">1. Create the resource folder
+2. Write fxmanifest.lua (fx_version, game, client_script, server_script)
+3. Register a command on the client and trigger a server event
+4. Listen on the server with RegisterNetEvent and reply to the player
+5. Test in-game with /hello and watch the server console</textarea>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;border:1px solid var(--border);border-radius:12px;padding:14px 16px;background:var(--panel);margin-top:20px">
+            <div><div style="font-size:13.5px;font-weight:700">Drip schedule</div><div style="font-size:12px;color:var(--faint);margin-top:2px">When students can access this lesson</div></div>
+            <span style="font-size:12.5px;font-weight:700;color:var(--good);background:var(--goodSoft);padding:7px 13px;border-radius:9px;cursor:pointer">Unlocks immediately ▾</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#2f6bff&quot;,&quot;options&quot;:[&quot;#2f6bff&quot;,&quot;#0a84ff&quot;,&quot;#2563eb&quot;,&quot;#22b8ff&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Brand&quot;},&quot;defaultTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Brand&quot;},&quot;showThumbnails&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Layout&quot;}}">
+class Component extends DCLogic {
+  state = {
+    theme: 'dark',
+    view: 'courses',
+    activeCat: 'All',
+    adminLessonId: 'l1',
+    adminDraftTitle: 'Intro to FiveM & Lua',
+    adminType: 'video',
+    activeTab: 'guide',
+    activeLessonId: 'l1',
+    showThumbs: true,
+    sections: [
+      { key: 'guide', label: 'Guide', enabled: true },
+      { key: 'summary', label: 'Summary / SOP', enabled: true },
+      { key: 'transcript', label: 'Transcript', enabled: true },
+      { key: 'quiz', label: 'Quiz', enabled: true },
+      { key: 'files', label: 'Files', enabled: true },
+    ],
+    playing: false,
+    completed: { l1: true, l1g: true, l1q: true, l2: false, l2g: false, l2q: false, l3: false, l3b: false, l4: false },
+    lang: 'EN',
+    quizAnswers: {},
+    quizSubmitted: false,
+    chatInput: '',
+    messages: [
+      { id: 1, user: 'rodrigofplourenco', role: '', color: '#e07b53', time: '10:09', text: "Each scope runs its own coroutines — handy if you want to dig deeper into data flow.", reacts: [{ e: '👍', n: 2 }] },
+      { id: 2, user: 'TheReggieMoore', role: 'MOD', color: '#6d9bff', time: '22:11', text: "Good tip about locals vs globals — globals add a little delay on calls, always declare local.", reacts: [] },
+      { id: 3, user: 'President Kishi', role: 'STAFF', color: '#33c27f', time: '22:13', text: "Is it parenthesis or parentheses for the two dots? :)", reacts: [{ e: '😂', n: 3 }] },
+      { id: 4, user: 'RED', role: 'INSTRUCTOR', color: '#ff5c6c', time: '22:14', text: "Both are fine. Re-watch 03:58 — that's where the nil bug comes from.", reacts: [{ e: '🔥', n: 5 }, { e: '✅', n: 2 }] },
+      { id: 5, user: 'QUASAR', role: 'STAFF', color: '#2f6bff', time: '22:16', text: "Homework: build /hello and post a screenshot in #homework-challenges.", reacts: [] },
+    ],
+  };
+
+  componentDidMount() {
+    const t = this.props.defaultTheme;
+    if (t && t !== this.state.theme) this.setState({ theme: t });
+    if (this.props.showThumbnails === false) this.setState({ showThumbs: false });
+    this.applyAccent();
+  }
+  componentDidUpdate() { this.applyAccent(); }
+  applyAccent() {
+    const a = this.props.accent || '#2f6bff';
+    const el = this._root;
+    if (!el) return;
+    el.style.setProperty('--accent', a);
+    el.style.setProperty('--accent2', `color-mix(in srgb, ${a} 55%, white)`);
+    el.style.setProperty('--accentSoft', `color-mix(in srgb, ${a} 16%, transparent)`);
+  }
+
+  CHAPTERS = [
+    { id: 'c1', title: 'Chapter 1 · Foundations', lessons: [
+      { id: 'l1', title: 'Intro to FiveM & Lua', meta: 'Video · 2h 36m', type: 'video' },
+      { id: 'l1g', title: 'Lesson 1 — Written guide', meta: 'PDF', type: 'pdf' },
+      { id: 'l1q', title: 'Test your knowledge 1', meta: 'Quiz · 4 questions', type: 'quiz' },
+    ]},
+    { id: 'c2', title: 'Chapter 2 · Scripting Core', lessons: [
+      { id: 'l2', title: 'Events, Threads & State', meta: 'Video · 2h 31m', type: 'video' },
+      { id: 'l2g', title: 'HTML session 2', meta: 'PDF', type: 'pdf' },
+      { id: 'l2q', title: 'Test your knowledge 2', meta: 'Quiz · 5 questions', type: 'quiz' },
+    ]},
+    { id: 'c3', title: 'Chapter 3 · Business & Tebex', lessons: [
+      { id: 'l3', title: 'Selling scripts on Tebex', meta: 'Video · 1h 58m', type: 'video', locked: true },
+      { id: 'l3b', title: 'Marketing your server', meta: 'Video · 1h 12m', type: 'video', locked: true },
+    ]},
+    { id: 'c4', title: 'Chapter 4 · AI Development', lessons: [
+      { id: 'l4', title: 'AI-assisted scripting workflows', meta: 'Video · 1h 40m', type: 'video', locked: true },
+    ]},
+  ];
+
+  LESSON_META = {
+    l1: { title: 'Zero to Hero on Lua — Lesson 1', chapterLabel: 'Chapter 1', dur: '2h 36m', updated: 'Apr 2026', guideTitle: 'Lesson 1 — Introduction to FiveM & Basic Lua' },
+    l2: { title: 'Events, Threads & State — Lesson 2', chapterLabel: 'Chapter 2', dur: '2h 31m', updated: 'May 2026', guideTitle: 'Lesson 2 — Events, Threads & Shared State' },
+    l3: { title: 'Selling scripts on Tebex', chapterLabel: 'Chapter 3', dur: '1h 58m', updated: 'May 2026', guideTitle: 'Lesson — Monetizing with Tebex' },
+    l3b: { title: 'Marketing your FiveM server', chapterLabel: 'Chapter 3', dur: '1h 12m', updated: 'May 2026', guideTitle: 'Lesson — Growth & Marketing' },
+    l4: { title: 'AI-assisted scripting workflows', chapterLabel: 'Chapter 4', dur: '1h 40m', updated: 'Jun 2026', guideTitle: 'Lesson — Building with AI' },
+  };
+
+  TRANSCRIPTS = {
+    EN: [
+      { t: '00:00', text: 'Welcome to Zero to Hero. In this lesson we set up your very first FiveM resource.' },
+      { t: '00:42', text: 'A resource is just a folder with an fxmanifest.lua — that file tells the server what to load.' },
+      { t: '01:30', text: 'Client scripts run on every player; server scripts run once on the host. Keep that mental model.' },
+      { t: '02:18', text: 'We register a command with RegisterCommand, then trigger a server event from the client.' },
+      { t: '03:05', text: 'On the server we listen with RegisterNetEvent and reply back to that one player.' },
+      { t: '03:58', text: 'If a value is nil, you probably read it before Citizen.Wait let the engine catch up.' },
+    ],
+    ES: [
+      { t: '00:00', text: 'Bienvenido a Zero to Hero. En esta lección configuramos tu primer recurso de FiveM.' },
+      { t: '00:42', text: 'Un recurso es una carpeta con un fxmanifest.lua — ese archivo le dice al servidor qué cargar.' },
+      { t: '01:30', text: 'Los scripts de cliente corren en cada jugador; los de servidor una sola vez en el host.' },
+      { t: '02:18', text: 'Registramos un comando con RegisterCommand y luego disparamos un evento al servidor.' },
+    ],
+    FR: [
+      { t: '00:00', text: 'Bienvenue dans Zero to Hero. Dans cette leçon, on crée votre première ressource FiveM.' },
+      { t: '00:42', text: 'Une ressource est un dossier avec un fxmanifest.lua — il indique au serveur quoi charger.' },
+    ],
+    DE: [
+      { t: '00:00', text: 'Willkommen bei Zero to Hero. In dieser Lektion erstellen wir deine erste FiveM-Ressource.' },
+      { t: '00:42', text: 'Eine Ressource ist ein Ordner mit einer fxmanifest.lua — sie sagt dem Server, was zu laden ist.' },
+    ],
+  };
+
+  QUESTIONS = [
+    { id: 'q1', q: 'Which file declares a FiveM resource and tells the server what to load?', choices: ['fxmanifest.lua', 'client.lua', 'resource.json', 'package.lua'], correct: 0 },
+    { id: 'q2', q: 'TriggerServerEvent is normally called from…', choices: ['the client', 'the server', 'the database', 'the OS console'], correct: 0 },
+    { id: 'q3', q: 'What is Citizen.Wait(0) used for inside a loop?', choices: ['Yield one tick so the thread does not freeze', 'Stop the resource', 'Restart the server', 'Clear all variables'], correct: 0 },
+    { id: 'q4', q: 'Where does print() output when called inside a server event?', choices: ['The server console', 'The F8 client console', 'The browser devtools', 'Nowhere'], correct: 0 },
+  ];
+
+  FILES = [
+    { name: 'From Zero To Hero — Class presentation.pdf', meta: 'PDF · 4.2 MB', kind: 'PDF', color: '#ff5c6c' },
+    { name: 'Zero to Hero Lesson 1 — Written guide.pdf', meta: 'PDF · 1.1 MB', kind: 'PDF', color: '#ff5c6c' },
+    { name: 'ES Transcript.txt', meta: 'Text · 18 KB', kind: 'TXT', color: '#33c27f' },
+    { name: 'FR Transcript.txt', meta: 'Text · 17 KB', kind: 'TXT', color: '#6d9bff' },
+    { name: 'DE Transcript.txt', meta: 'Text · 16 KB', kind: 'TXT', color: '#f5b740' },
+  ];
+
+  CATS = ['All', 'Scripting', 'Lua', 'Business', 'Marketing', 'AI'];
+  COURSES = [
+    { id: 'c-fivem', thumbId: 'thumb-c-fivem', title: 'Master LUA — Zero to Hero', instructor: 'RED', cat: 'Scripting', level: 'All levels', chapters: 4, lessons: 24, hours: '18h', accent: '#2f6bff', enrolled: true, progress: 33, students: '4.2k', desc: 'Master LUA from zero to hero with Professor RED. LUA is the main coding language behind every FiveM resource.' },
+    { id: 'c-ai', thumbId: 'thumb-c-ai', title: 'AI Dev for FiveM', instructor: 'QUASAR', cat: 'AI', level: 'Intermediate', chapters: 3, lessons: 14, hours: '9h', accent: '#1aa3c4', enrolled: true, progress: 48, students: '2.7k', desc: 'Use AI tooling to scaffold, debug and ship resources faster — prompts, workflows and guardrails.' },
+    { id: 'c-lua', thumbId: 'thumb-c-lua', title: 'Advanced Lua Patterns', instructor: 'QUASAR', cat: 'Lua', level: 'Advanced', chapters: 5, lessons: 16, hours: '11h', accent: '#3b6fe0', enrolled: true, progress: 12, students: '1.8k', desc: 'Metatables, coroutines and performance patterns for clean, fast server-side code.' },
+    { id: 'c-tebex', thumbId: 'thumb-c-tebex', title: 'Selling Scripts on Tebex', instructor: 'President Kishi', cat: 'Business', level: 'Beginner', chapters: 2, lessons: 9, hours: '5h', accent: '#33c27f', enrolled: false, progress: 0, students: '960', desc: 'Package, price and sell your scripts on Tebex — storefront setup, licensing and payouts.' },
+    { id: 'c-mkt', thumbId: 'thumb-c-mkt', title: 'Server Marketing 101', instructor: 'RED', cat: 'Marketing', level: 'Beginner', chapters: 3, lessons: 12, hours: '7h', accent: '#f59e3c', enrolled: false, progress: 0, students: '1.3k', desc: 'Grow your community: Discord funnels, trailers and launch strategy that actually fills servers.' },
+    { id: 'c-db', thumbId: 'thumb-c-db', title: 'Databases & MySQL for Servers', instructor: 'TheReggieMoore', cat: 'Scripting', level: 'Intermediate', chapters: 3, lessons: 11, hours: '6h', accent: '#ff5c6c', enrolled: false, progress: 0, students: '1.1k', desc: 'Persist player data the right way with MySQL, oxmysql and migrations.' },
+  ];
+  ACTIVITY = [{ l: 'M', v: 45 }, { l: 'T', v: 72 }, { l: 'W', v: 58 }, { l: 'T', v: 90 }, { l: 'F', v: 63 }, { l: 'S', v: 80 }, { l: 'S', v: 100 }];
+  ACHIEVEMENTS = [
+    { name: 'First Script', sub: 'Shipped /hello', glyph: '✓', unlocked: true },
+    { name: 'Quiz Ace', sub: '100% on a quiz', glyph: '★', unlocked: true },
+    { name: '7-Day Streak', sub: 'Keep it going', glyph: '▲', unlocked: false },
+    { name: 'Tebex Seller', sub: 'First sale', glyph: '◆', unlocked: false },
+  ];
+  QUIZ_RESULTS = [
+    { name: 'Test your knowledge 1', meta: 'Chapter 1', score: '4/4', state: 'pass' },
+    { name: 'Lua basics check', meta: 'Chapter 1', score: '3/4', state: 'pass' },
+    { name: 'Events & threads', meta: 'Chapter 2', score: 'Not taken', state: 'pending' },
+  ];
+
+  toggleSection = (key) => this.setState(s => ({ sections: s.sections.map(x => x.key === key ? { ...x, enabled: !x.enabled } : x) }));
+  toggleThumbs = () => this.setState(s => ({ showThumbs: !s.showThumbs }));
+  setTab(t) { this.setState({ activeTab: t }); }
+  setView = (v) => this.setState({ view: v });
+  goToPlayer = () => this.setState({ view: 'player' });
+  goToCourses = () => this.setState({ view: 'courses' });
+  toggleAdmin = () => this.setState(s => ({ view: s.view === 'admin' ? 'courses' : 'admin' }));
+  setCat = (c) => this.setState({ activeCat: c });
+  selectAdminLesson = (id, title) => this.setState({ adminLessonId: id, adminDraftTitle: title });
+  onAdminTitle = (e) => this.setState({ adminDraftTitle: e.target.value });
+  setAdminType = (t) => this.setState({ adminType: t });
+  toggleTheme = () => this.setState(s => ({ theme: s.theme === 'dark' ? 'light' : 'dark' }));
+  togglePlay = () => this.setState(s => ({ playing: !s.playing }));
+  markComplete = () => this.setState(s => ({ completed: { ...s.completed, [s.activeLessonId]: !s.completed[s.activeLessonId] } }));
+  selectLesson(id, type) {
+    if (this.state.quizSubmitted && id !== this.state.activeLessonId) {}
+    const tab = type === 'quiz' ? 'quiz' : type === 'pdf' ? 'files' : 'guide';
+    this.setState({ activeLessonId: id, activeTab: tab, playing: false });
+  }
+  selectAnswer(qid, i) { if (this.state.quizSubmitted) return; this.setState(s => ({ quizAnswers: { ...s.quizAnswers, [qid]: i } })); }
+  submitQuiz = () => this.setState({ quizSubmitted: true });
+  resetQuiz = () => this.setState({ quizSubmitted: false, quizAnswers: {} });
+  onChatInput = (e) => this.setState({ chatInput: e.target.value });
+  onChatKey = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.sendMessage(); } };
+  sendMessage = () => {
+    const t = this.state.chatInput.trim();
+    if (!t) return;
+    this.setState(s => ({ messages: [...s.messages, { id: Date.now(), user: 'You', role: '', color: '#2f6bff', time: 'now', text: t, reacts: [] }], chatInput: '' }));
+  };
+
+  renderVals() {
+    const s = this.state;
+    const done = (id) => !!s.completed[id];
+
+    // chapters
+    const chaptersView = this.CHAPTERS.map(ch => ({
+      title: ch.title,
+      count: ch.lessons.length + (ch.lessons.length === 1 ? ' lesson' : ' lessons'),
+      thumbId: 'ct-' + ch.id,
+      lessons: ch.lessons.map(l => {
+        const active = l.id === s.activeLessonId;
+        const isDone = done(l.id);
+        const locked = !!l.locked;
+        const glyph = isDone ? '✓' : locked ? '🔒' : l.type === 'video' ? '▶' : l.type === 'quiz' ? '?' : '↧';
+        const statusBg = isDone ? 'var(--good)' : locked ? '#2a3344' : active ? 'var(--accent)' : 'rgba(8,12,20,.78)';
+        const typeIcon = l.type === 'video' ? '▶' : l.type === 'quiz' ? '?' : '↧';
+        const durMatch = (l.meta.split('·')[1] || '').trim();
+        const badgeText = l.type === 'video' ? (durMatch || 'Video') : l.type === 'quiz' ? 'Quiz' : 'PDF';
+        return {
+          title: l.title,
+          meta: l.meta,
+          glyph, typeIcon, badgeText,
+          showStatus: isDone || locked,
+          thumbId: 'lt-' + l.id,
+          rowStyle: `display:flex;gap:11px;align-items:center;padding:7px 8px;border-radius:11px;margin-bottom:3px;transition:background .15s;cursor:${locked ? 'not-allowed' : 'pointer'};opacity:${locked ? '.6' : '1'};background:${active ? 'var(--accentSoft)' : 'transparent'};border:1px solid ${active ? 'rgba(47,107,255,.4)' : 'transparent'}`,
+          posterStyle: `position:relative;width:108px;height:64px;flex-shrink:0;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 120% at 50% 0%, #21344f, #0a0f18);border:1px solid ${active ? 'var(--accent)' : 'var(--border)'}`,
+          playStyle: `width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${l.type === 'video' ? '11px' : '13px'};color:#fff;background:${active ? 'var(--accent)' : 'rgba(255,255,255,.16)'};backdrop-filter:blur(2px);padding-left:${l.type === 'video' ? '2px' : '0'}`,
+          durBadgeStyle: `position:absolute;bottom:4px;left:4px;font-size:9px;font-weight:700;color:#fff;background:rgba(8,12,20,.7);padding:2px 6px;border-radius:5px`,
+          badgeStyle: `width:34px;height:34px;flex-shrink:0;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:${isDone ? '14px' : '12px'};font-weight:700;background:${isDone ? 'var(--goodSoft)' : active ? 'rgba(47,107,255,.22)' : 'var(--panel2)'};color:${isDone ? 'var(--good)' : active ? 'var(--accent2)' : 'var(--muted)'};border:1px solid ${isDone || active ? 'transparent' : 'var(--border)'}`,
+          statusStyle: `position:absolute;bottom:4px;right:4px;min-width:18px;height:18px;padding:0 4px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:800;color:#fff;background:${statusBg};box-shadow:0 1px 4px rgba(0,0,0,.45)`,
+          titleStyle: `font-size:13.5px;font-weight:${active ? '700' : '500'};line-height:1.3;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden`,
+          onClick: locked ? (() => {}) : (() => this.selectLesson(l.id, l.type)),
+        };
+      }),
+    }));
+
+    // progress
+    const allLessons = this.CHAPTERS.flatMap(c => c.lessons);
+    const lessonsTotal = allLessons.length;
+    const lessonsDone = allLessons.filter(l => done(l.id)).length;
+    const progressPct = Math.round((lessonsDone / lessonsTotal) * 100);
+
+    // active lesson
+    const meta = this.LESSON_META[s.activeLessonId] || this.LESSON_META.l1;
+    const isCompleted = done(s.activeLessonId);
+
+    // tabs from editable sections
+    const counts = { files: this.FILES.length };
+    const enabledSections = s.sections.filter(t => t.enabled);
+    const enabledKeys = enabledSections.map(t => t.key);
+    const effectiveTab = enabledKeys.includes(s.activeTab) ? s.activeTab : (enabledKeys[0] || 'guide');
+    const tabsView = enabledSections.map(t => {
+      const active = t.key === effectiveTab;
+      return {
+        label: t.label,
+        showCount: counts[t.key] != null,
+        count: counts[t.key],
+        style: `padding:12px 2px;font-size:14px;font-weight:${active ? '700' : '500'};color:${active ? 'var(--text)' : 'var(--muted)'};cursor:pointer;border-bottom:2px solid ${active ? 'var(--accent)' : 'transparent'};margin-bottom:-1px;white-space:nowrap`,
+        onClick: () => this.setTab(t.key),
+      };
+    });
+
+    // transcript
+    const langs = ['EN', 'ES', 'FR', 'DE'];
+    const langsView = langs.map(l => ({
+      label: l,
+      style: `font-size:12.5px;font-weight:700;padding:7px 14px;border-radius:9px;cursor:pointer;border:1px solid ${s.lang === l ? 'var(--accent)' : 'var(--border)'};background:${s.lang === l ? 'var(--accentSoft)' : 'var(--panel2)'};color:${s.lang === l ? 'var(--accent)' : 'var(--muted)'}`,
+      onClick: () => this.setState({ lang: l }),
+    }));
+    const transcriptView = (this.TRANSCRIPTS[s.lang] || this.TRANSCRIPTS.EN).map(ln => ({ t: ln.t, text: ln.text, onClick: () => {} }));
+
+    // quiz
+    const score = this.QUESTIONS.filter(q => s.quizAnswers[q.id] === q.correct).length;
+    const allAnswered = this.QUESTIONS.every(q => s.quizAnswers[q.id] != null);
+    const quizView = this.QUESTIONS.map((q, qi) => ({
+      num: 'Q' + (qi + 1),
+      q: q.q,
+      choicesView: q.choices.map((c, i) => {
+        const selected = s.quizAnswers[q.id] === i;
+        let bd = 'var(--border)', bg = 'var(--panel2)', mk = '', mkBg = 'var(--border)', mkColor = 'var(--muted)';
+        if (!s.quizSubmitted) {
+          if (selected) { bd = 'var(--accent)'; bg = 'var(--accentSoft)'; mkBg = 'var(--accent)'; mkColor = '#fff'; mk = '●'; }
+        } else {
+          if (i === q.correct) { bd = 'var(--good)'; bg = 'var(--goodSoft)'; mkBg = 'var(--good)'; mkColor = '#fff'; mk = '✓'; }
+          else if (selected) { bd = 'var(--bad)'; bg = 'var(--badSoft)'; mkBg = 'var(--bad)'; mkColor = '#fff'; mk = '✕'; }
+        }
+        return {
+          text: c,
+          mark: mk,
+          markStyle: `width:22px;height:22px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:${mk ? mkBg : 'transparent'};color:${mkColor};border:${mk ? 'none' : '2px solid var(--border2)'}`,
+          style: `display:flex;align-items:center;gap:12px;padding:13px 15px;border-radius:11px;cursor:${s.quizSubmitted ? 'default' : 'pointer'};border:1.5px solid ${bd};background:${bg};transition:all .12s`,
+          onClick: () => this.selectAnswer(q.id, i),
+        };
+      }),
+    }));
+    const scorePass = score >= 3;
+
+    // files
+    const filesView = this.FILES.map(f => ({
+      name: f.name, meta: f.meta, kind: f.kind,
+      iconStyle: `width:46px;height:46px;flex-shrink:0;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;background:${f.color}`,
+    }));
+
+    // community
+    const roleColors = { INSTRUCTOR: 'var(--bad)', STAFF: 'var(--accent)', MOD: '#1aa3c4' };
+    const messagesView = s.messages.map(m => ({
+      initial: (m.user[0] || '?').toUpperCase(),
+      user: m.user, role: m.role, time: m.time, text: m.text,
+      showRole: !!m.role,
+      roleStyle: `font-size:9.5px;font-weight:800;letter-spacing:.05em;padding:2px 7px;border-radius:6px;color:#fff;background:${roleColors[m.role] || 'var(--muted)'}`,
+      avatarStyle: `width:38px;height:38px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;background:${m.color}`,
+      hasReacts: m.reacts.length > 0,
+      reactsView: m.reacts.map(r => ({ e: r.e, n: r.n })),
+    }));
+
+    // ===== view + nav =====
+    const view = s.view;
+    const navItems = [
+      { key: 'courses', label: 'Courses', v: 'courses' },
+    ];
+    const navActive = 'courses';
+    const navView = navItems.map(n => {
+      const active = n.key === navActive;
+      return {
+        label: n.label,
+        style: `padding:8px 13px;border-radius:9px;font-size:13.5px;font-weight:${active ? '700' : '600'};cursor:pointer;color:${active ? 'var(--accent)' : 'var(--muted)'};background:${active ? 'var(--accentSoft)' : 'transparent'}`,
+        onClick: () => this.setView(n.v),
+      };
+    });
+    const inAdmin = view === 'admin';
+
+    // ===== courses =====
+    const catChip = `position:absolute;bottom:11px;left:12px;font-size:10.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.28);padding:3px 9px;border-radius:20px;backdrop-filter:blur(4px)`;
+    const mkCourse = (c) => ({
+      title: c.title, cat: c.cat, level: c.level, instructor: c.instructor, thumbId: c.thumbId, desc: c.desc,
+      instrInitial: (c.instructor[0] || '?').toUpperCase(),
+      chapters: c.chapters, hours: c.hours,
+      lessonsLabel: `${c.lessons} lessons`,
+      meta: `${c.chapters} chapters · ${c.lessons} lessons · ${c.hours}`,
+      students: c.students, enrolled: c.enrolled, notEnrolled: !c.enrolled, progress: c.progress,
+      instrStyle: `width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;background:${c.accent}`,
+      onClick: () => this.setState({ view: 'player' }),
+    });
+    const coursesView = this.COURSES.map(mkCourse);
+    const enrolledCourses = this.COURSES.filter(c => c.enrolled).map(mkCourse);
+    const filteredCourses = (s.activeCat === 'All' ? this.COURSES : this.COURSES.filter(c => c.cat === s.activeCat)).map(mkCourse);
+    const catView = this.CATS.map(c => ({
+      label: c,
+      style: `font-size:13px;font-weight:700;padding:8px 16px;border-radius:10px;cursor:pointer;border:1px solid ${s.activeCat === c ? 'var(--accent)' : 'var(--border)'};background:${s.activeCat === c ? 'var(--accentSoft)' : 'var(--panel)'};color:${s.activeCat === c ? 'var(--accent)' : 'var(--muted)'}`,
+      onClick: () => this.setCat(c),
+    }));
+
+    // ===== progress stats =====
+    const progStatsView = [
+      { value: '31%', label: 'Overall complete', color: 'var(--accent)' },
+      { value: '38', label: 'Lessons completed', color: 'var(--text)' },
+      { value: '26h', label: 'Hours learned', color: 'var(--text)' },
+      { value: '2', label: 'Certificates earned', color: 'var(--text)' },
+    ];
+    const activityView = this.ACTIVITY.map((d, i) => ({
+      label: d.l,
+      barStyle: `width:100%;border-radius:6px 6px 4px 4px;height:${d.v}%;background:${i === this.ACTIVITY.length - 1 ? 'var(--accent)' : 'var(--border2)'}`,
+    }));
+    const upNextView = [
+      { title: 'Events, Threads & State', meta: 'Master LUA · Chapter 2 · Lesson 4' },
+      { title: 'Test your knowledge 2', meta: 'Master LUA · Chapter 2 · Quiz' },
+      { title: 'Prompting for code scaffolds', meta: 'AI Dev for FiveM · Chapter 1' },
+    ];
+    const quizResultsView = this.QUIZ_RESULTS.map(q => ({
+      name: q.name, meta: q.meta, score: q.score,
+      scoreStyle: `font-size:12.5px;font-weight:800;padding:6px 12px;border-radius:9px;${q.state === 'pass' ? 'background:var(--goodSoft);color:var(--good)' : 'background:var(--panel);color:var(--faint);border:1px solid var(--border)'}`,
+    }));
+
+    // ===== admin =====
+    const adminChaptersView = this.CHAPTERS.map(ch => ({
+      title: ch.title.replace(/^Chapter \d+ · /, ''),
+      lessons: ch.lessons.map(l => {
+        const active = l.id === s.adminLessonId;
+        const glyph = l.type === 'video' ? '▶' : l.type === 'quiz' ? '?' : '↓';
+        return {
+          title: l.title, glyph,
+          rowStyle: `display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;margin-bottom:3px;cursor:pointer;background:${active ? 'var(--accentSoft)' : 'transparent'};border:1px solid ${active ? 'rgba(47,107,255,.4)' : 'transparent'}`,
+          iconStyle: `width:24px;height:24px;flex-shrink:0;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:${active ? 'rgba(47,107,255,.2)' : 'var(--panel2)'};color:${active ? 'var(--accent2)' : 'var(--muted)'}`,
+          onClick: () => this.selectAdminLesson(l.id, l.title),
+        };
+      }),
+    }));
+    const lessonTypeView = [
+      { key: 'video', label: 'Video' }, { key: 'pdf', label: 'PDF / Guide' }, { key: 'quiz', label: 'Quiz' },
+    ].map(t => ({
+      label: t.label,
+      style: `font-size:13px;font-weight:700;padding:9px 16px;border-radius:10px;cursor:pointer;border:1px solid ${s.adminType === t.key ? 'var(--accent)' : 'var(--border)'};background:${s.adminType === t.key ? 'var(--accentSoft)' : 'var(--panel2)'};color:${s.adminType === t.key ? 'var(--accent)' : 'var(--muted)'}`,
+      onClick: () => this.setAdminType(t.key),
+    }));
+    const sectionsAdminView = s.sections.map(sec => ({
+      label: sec.label,
+      enabled: sec.enabled,
+      hint: sec.enabled ? 'Visible to students' : 'Hidden · removed from lesson',
+      rowStyle: `display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:11px;border:1px solid ${sec.enabled ? 'var(--border)' : 'transparent'};background:${sec.enabled ? 'var(--panel)' : 'var(--panel2)'};opacity:${sec.enabled ? '1' : '.6'}`,
+      switchStyle: `position:relative;width:38px;height:22px;flex-shrink:0;border-radius:20px;cursor:pointer;transition:background .15s;background:${sec.enabled ? 'var(--accent)' : 'var(--border2)'}`,
+      knobStyle: `position:absolute;top:2px;left:${sec.enabled ? '18px' : '2px'};width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.3)`,
+      onToggle: () => this.toggleSection(sec.key),
+    }));
+
+    return {
+      theme: s.theme,
+      isDark: s.theme === 'dark',
+      isLight: s.theme === 'light',
+      toggleTheme: this.toggleTheme,
+      setRoot: (el) => { this._root = el; if (el) this.applyAccent(); },
+
+      view,
+      isPlayer: view === 'player',
+      isCourses: view === 'courses',
+      isAdmin: view === 'admin',
+      navView,
+      goToPlayer: this.goToPlayer,
+      goToCourses: this.goToCourses,
+      toggleAdmin: this.toggleAdmin,
+      adminBtnLabel: inAdmin ? 'Student view' : 'Instructor',
+      adminBtnStyle: `display:flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid ${inAdmin ? 'transparent' : 'var(--border)'};background:${inAdmin ? 'var(--accent)' : 'var(--panel2)'};color:${inAdmin ? '#fff' : 'var(--text)'}`,
+      coursesView, enrolledCourses, filteredCourses, catView,
+      adminChaptersView, adminDraftTitle: s.adminDraftTitle, onAdminTitle: this.onAdminTitle, lessonTypeView,
+      sectionsAdminView, toggleThumbs: this.toggleThumbs,
+      thumbsToggleStyle: `position:relative;width:38px;height:22px;flex-shrink:0;border-radius:20px;cursor:pointer;transition:background .15s;background:${s.showThumbs ? 'var(--accent)' : 'var(--border2)'}`,
+      thumbsKnobStyle: `position:absolute;top:2px;left:${s.showThumbs ? '18px' : '2px'};width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.3)`,
+
+      chaptersView,
+      progressPct, lessonsDone, lessonsTotal,
+      hoursLeft: '6h',
+
+      activeLesson: meta,
+      videoSub: 'From Zero to Hero Scripting with RED',
+      videoTime: s.playing ? '12:48' : '00:00',
+      videoPct: s.playing ? 8 : 0,
+      playing: s.playing,
+      paused: !s.playing,
+      togglePlay: this.togglePlay,
+
+      markComplete: this.markComplete,
+      completeLabel: isCompleted ? 'Completed' : 'Mark complete',
+      completeBtnStyle: `display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;border-radius:10px;padding:9px 14px;cursor:pointer;border:1px solid ${isCompleted ? 'transparent' : 'var(--border)'};background:${isCompleted ? 'var(--goodSoft)' : 'var(--panel2)'};color:${isCompleted ? 'var(--good)' : 'var(--text)'}`,
+
+      tabsView,
+      isGuide: effectiveTab === 'guide',
+      isSummary: effectiveTab === 'summary',
+      isTranscript: effectiveTab === 'transcript',
+      isQuiz: effectiveTab === 'quiz',
+      isFiles: effectiveTab === 'files',
+      showThumbs: s.showThumbs,
+      noThumbs: !s.showThumbs,
+      sopSteps: [
+        { n: 1, title: 'Create the resource folder', body: 'Add a new folder under resources/ and give it a clear name (no spaces). This folder IS the resource.' },
+        { n: 2, title: 'Write fxmanifest.lua', body: "Declare fx_version, game, then list your client_script and server_script. Nothing loads without it." },
+        { n: 3, title: 'Register a command on the client', body: 'Use RegisterCommand to give players a trigger, then TriggerServerEvent to hand control to the server.' },
+        { n: 4, title: 'Listen & reply on the server', body: 'RegisterNetEvent picks up the event; capture source and TriggerClientEvent back to that one player.' },
+        { n: 5, title: 'Test in-game', body: 'Run /hello, watch the server console for your print, and confirm the reply lands on the right client.' },
+      ],
+
+      langsView, transcriptView,
+
+      quizView,
+      quizSubmitted: s.quizSubmitted,
+      quizOpen: !s.quizSubmitted,
+      score, quizTotal: this.QUESTIONS.length,
+      submitQuiz: this.submitQuiz, resetQuiz: this.resetQuiz,
+      submitStyle: `font-size:14px;font-weight:700;color:#fff;border:none;border-radius:11px;padding:13px 24px;cursor:${allAnswered ? 'pointer' : 'not-allowed'};opacity:${allAnswered ? '1' : '.5'};background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 8px 20px var(--accentSoft)`,
+      scoreBadgeStyle: `font-size:13px;font-weight:800;padding:7px 14px;border-radius:10px;background:${scorePass ? 'var(--goodSoft)' : 'var(--badSoft)'};color:${scorePass ? 'var(--good)' : 'var(--bad)'}`,
+
+      filesView,
+
+      messagesView,
+      chatInput: s.chatInput,
+      onChatInput: this.onChatInput,
+      onChatKey: this.onChatKey,
+      sendMessage: this.sendMessage,
+    };
+  }
+}
+</script>
+<script>
+(async () => {
+  if (!document.title || !document.title.trim()) document.title = "Classroom Player";
+  // Prepend so page-supplied @page / break rules (deck-stage's margin:0,
+  // author CSS) keep source-order precedence over the baseline.
+  const baseCss = document.createElement('style');
+  baseCss.textContent = "@media print {\n  figure, table { break-inside: avoid; }\n  *, *::before, *::after {\n    print-color-adjust: exact; -webkit-print-color-adjust: exact;\n    backdrop-filter: none !important; -webkit-backdrop-filter: none !important;\n    animation-delay: -99s !important; animation-duration: .001s !important;\n    animation-iteration-count: 1 !important; animation-fill-mode: both !important;\n    animation-play-state: running !important; transition-duration: 0s !important;\n  }\n}";
+  document.head.prepend(baseCss);
+  if (document.readyState === 'loading') {
+    await new Promise((r) => document.addEventListener('DOMContentLoaded', r, { once: true }));
+  }
+  let ds = document.querySelector('deck-stage');
+  // whenDefined never resolves when nothing registers the element, so only
+  // await it when a <deck-stage> tag exists (and race a timeout regardless).
+  if (ds && !customElements.get('deck-stage')) {
+    try {
+      await Promise.race([
+        customElements.whenDefined('deck-stage'),
+        new Promise((r) => setTimeout(r, 3000)),
+      ]);
+    } catch (e) {}
+    ds = document.querySelector('deck-stage');
+  }
+  // dc-runtime assigns window.DCLogic at init and mounts into #dc-root on
+  // DOMContentLoaded; settle on that subtree so React has rendered before
+  // print(). Non-DC pages fall through to weighing body.
+  const isDc = !ds && 'DCLogic' in window;
+  const settleRoot = ds || (isDc ? document.getElementById('dc-root') : null) || document.body;
+  if (settleRoot) {
+    // Weigh only content children — skip script/style/template so inline
+    // Babel/CSS doesn't register as stable "content" before the framework
+    // has mounted anything.
+    const MEDIA = 'img,svg,canvas,video,picture,iframe,embed,object';
+    const weigh = () => {
+      let text = 0, media = 0;
+      for (const c of settleRoot.children) {
+        const t = c.tagName;
+        if (t === 'SCRIPT' || t === 'STYLE' || t === 'TEMPLATE') continue;
+        text += (c.textContent || '').trim().length;
+        media += c.querySelectorAll(MEDIA).length + (c.matches(MEDIA) ? 1 : 0);
+      }
+      return text + media * 100;
+    };
+    // "Non-zero and stable" alone is not sufficient to mean rendered: generic
+    // body can carry a static shell while async main content is pending, and
+    // #dc-root can carry the root DC's static text while child refs are still
+    // .sc-placeholder boxes. Gate generic on readyState 'complete', and never
+    // accept stability while a dc-runtime placeholder is present.
+    const isGeneric = settleRoot === document.body;
+    const deadline = Date.now() + 15000;
+    let last = -1, stable = 0;
+    while (Date.now() < deadline) {
+      const n = weigh();
+      const ready =
+        (!isGeneric || document.readyState === 'complete') &&
+        !settleRoot.querySelector('.sc-placeholder');
+      if (n > 0 && n === last && ready) { if (++stable >= 2) break; } else { stable = 0; }
+      last = n;
+      await new Promise((r) => setTimeout(r, 250));
+    }
+  }
+  // Project support.js may predate runtime default-seeding; push via bridge.
+  if (isDc && window.__dcSetProps && window.__dcRootName) {
+    try {
+      const dpEl = document.querySelector('script[data-dc-script]');
+      const meta = JSON.parse((dpEl && dpEl.getAttribute('data-props')) || '{}');
+      const bag = {};
+      for (const k in meta)
+        if (k[0] !== '$' && meta[k] && meta[k].default !== undefined)
+          bag[k] = meta[k].default;
+      if (Object.keys(bag).length) {
+        window.__dcSetProps(window.__dcRootName(), bag);
+        await new Promise((r) => setTimeout(r, 50));
+      }
+    } catch (e) {}
+  }
+  // Reveal content gated on scroll or visibility before printing. Lazy <img>,
+  // IntersectionObserver fade-ins, and collapsed <details> don't render while
+  // off-screen, so a long page would print with them blank or closed. Open
+  // every <details>, force native-lazy images eager, and scroll the document
+  // through its full height to trip lazy-load + IO; then wait (bounded) for the
+  // newly-triggered images. Inert for deck-stage (slides aren't scroll-gated).
+  try {
+    for (const d of document.querySelectorAll('details')) d.open = true;
+    for (const img of document.querySelectorAll('img[loading="lazy"]'))
+      img.loading = 'eager';
+    const scroller = document.scrollingElement || document.documentElement;
+    const full = Math.max(scroller.scrollHeight, document.body.scrollHeight);
+    const step = window.innerHeight || 800;
+    for (let y = 0; y <= full; y += step) {
+      window.scrollTo(0, y);
+      await new Promise((r) => requestAnimationFrame(r));
+    }
+    window.scrollTo(0, 0);
+    await Promise.race([
+      Promise.all(
+        [...document.images].map((img) =>
+          img.complete
+            ? null
+            : new Promise((res) => {
+                img.addEventListener('load', res, { once: true });
+                img.addEventListener('error', res, { once: true });
+              })
+        )
+      ),
+      new Promise((r) => setTimeout(r, 4000)),
+    ]);
+  } catch (e) {}
+  try { await document.fonts.ready; } catch (e) {}
+  // Jump every animation to its end state so print() never captures a slide
+  // mid-entrance. Ordering matters: the 0s-transition style must be live
+  // BEFORE data-deck-active is set so attribute-keyed transitions don't
+  // start a (now-0s) run from the pre-active base.
+  const st = document.createElement('style');
+  st.textContent = '*,*::before,*::after{animation-delay:-99s !important;animation-duration:.001s !important;animation-iteration-count:1 !important;animation-fill-mode:both !important;animation-play-state:running !important;transition-duration:0s !important}';
+  document.head.appendChild(st);
+  for (const d of document.querySelectorAll('deck-stage')) {
+    for (const c of d.children) {
+      const t = c.tagName;
+      if (t === 'SCRIPT' || t === 'STYLE' || t === 'TEMPLATE') continue;
+      c.setAttribute('data-deck-active', '');
+    }
+  }
+  // Re-append deck-stage's @page last so no author @page can add a margin and
+  // spill each full-bleed slide onto two sheets. Backstop for old copies.
+  if (ds) {
+    let pg = document.getElementById('deck-stage-print-page');
+    if (!pg) {
+      pg = document.createElement('style');
+      pg.textContent = '@page{size:' + (+ds.getAttribute('width') || 1920) +
+        'px ' + (+ds.getAttribute('height') || 1080) + 'px;margin:0}';
+    }
+    document.body.appendChild(pg);
+  }
+  try {
+    const sweep = () => {
+      for (const a of document.getAnimations()) {
+        try { a.finish(); } catch (e) {
+          try { a.currentTime = (a.effect && a.effect.getComputedTiming().duration) || 0; a.pause(); } catch (e2) {}
+        }
+      }
+    };
+    sweep();
+    await new Promise((r) => requestAnimationFrame(r));
+    sweep();
+    await new Promise((r) => requestAnimationFrame(r));
+  } catch (e) {}
+  // Size the PDF page to the rendered design unless the file opted into
+  // standard paper via @page{size:letter|A4|…}. Decks own their own @page.
+  // Wrappers (body, …) lose padding+margin so the frame sits at (0,0); the
+  // frame itself loses only margin — its padding is INSIDE the measured
+  // rect and must stay, or content shifts and leaves a gap at bottom/right.
+  var __m = null;
+  try { __m = (() => {
+  var docEl = document.documentElement;
+  var doc = { width: docEl.scrollWidth, height: docEl.scrollHeight };
+
+  var ds = document.querySelector('deck-stage');
+  if (ds) {
+    var dw = Number(ds.getAttribute('width')) || 1920;
+    var dh = Number(ds.getAttribute('height')) || 1080;
+    var n = typeof ds.length === 'number' ? ds.length : ds.children.length;
+    var idx = typeof ds.index === 'number' ? ds.index : 0;
+    var frames = [];
+    for (var i = 0; i < n; i++) frames.push({ left: 0, top: 0, width: dw, height: dh });
+    return { kind: 'deck', doc: doc, frames: frames,
+      authored: frames.map(function(){return{width:true,height:true}}),
+      deck: { width: dw, height: dh, slideCount: n, index: idx },
+      signals: { paperPage: false, pxPage: false } };
+  }
+
+  var paperPage = false, pxPage = false;
+  var eachRule = function (fn) {
+    for (var s = 0; s < document.styleSheets.length; s++) {
+      var rs; try { rs = document.styleSheets[s].cssRules; } catch (e) { continue; }
+      for (var r = 0; r < rs.length; r++) {
+        fn(rs[r]);
+        if (rs[r].cssRules) for (var n = 0; n < rs[r].cssRules.length; n++) fn(rs[r].cssRules[n]);
+      }
+    }
+  };
+  eachRule(function (r) {
+    if (r.type !== 6) return;
+    var m = /\bsize\s*:\s*([^;}]+)/i.exec(r.cssText || '');
+    if (!m) return;
+    if (/\b(letter|a[3-5]|legal|ledger)\b/i.test(m[1])) paperPage = true;
+    if (/\d+(?:\.\d+)?px\b/i.test(m[1])) pxPage = true;
+  });
+  var signals = { paperPage: paperPage, pxPage: pxPage };
+
+  var pxVal = function (v) {
+    var m = /^(\d+(?:\.\d+)?)px$/.exec(v || ''); return m ? +m[1] : 0;
+  };
+  var authoredPx = function (el, prop) {
+    if (pxVal(el.style[prop])) return true;
+    var attr = el.getAttribute(prop);
+    if (attr && /^\d+$/.test(attr)) return true;
+    var hit = false;
+    eachRule(function (r) {
+      if (hit || r.type !== 1 || !r.style) return;
+      try { if (el.matches(r.selectorText) && pxVal(r.style[prop])) hit = true; } catch (e) {}
+    });
+    return hit;
+  };
+
+  var el = document.body, rootPxW = false;
+  for (;;) {
+    var kids = [];
+    for (var c = 0; c < el.children.length; c++) {
+      var t = el.children[c].tagName;
+      if (t !== 'SCRIPT' && t !== 'STYLE' && t !== 'TEMPLATE') kids.push(el.children[c]);
+    }
+    if (kids.length !== 1 || !(kids[0] instanceof HTMLElement)) break;
+    el.setAttribute('data-om-frame-wrap', '');
+    el = kids[0];
+    rootPxW = authoredPx(el, 'width');
+    if (rootPxW) break;
+  }
+  if (!rootPxW) rootPxW = authoredPx(el, 'width');
+
+  // @page{size:letter} alone is a flowing doc; with a px-width root it's a
+  // fixed sheet pretending to be paper — fall through and size to render.
+  if (paperPage && !rootPxW) {
+    return { kind: 'paper-doc', doc: doc, signals: signals,
+      frames: [{ left: 0, top: 0, width: doc.width, height: doc.height }],
+      authored: [{ width: false, height: false }] };
+  }
+
+  var sx = window.scrollX || 0, sy = window.scrollY || 0;
+  var rectOf = function (e) {
+    var r = e.getBoundingClientRect();
+    var oy; try { oy = getComputedStyle(e).overflowY; } catch (err) {}
+    var h = oy === 'visible' ? Math.max(r.height, e.scrollHeight || 0) : r.height;
+    return { left: r.left + sx, top: r.top + sy, width: r.width, height: h };
+  };
+
+  // Multi-frame: ≥2 visible non-fixed children, each with authored px width
+  // AND height, all within ±2px of each other. Off unless the page opts in
+  // via data-om-multi-frame on the stop element — guards against card grids
+  // and pricing tables that match the geometry but aren't separate canvases.
+  if (el.hasAttribute('data-om-multi-frame')) {
+    var cands = [];
+    for (var k = 0; k < el.children.length; k++) {
+      var ch = el.children[k];
+      var cs; try { cs = getComputedStyle(ch); } catch (e) { continue; }
+      if (cs.display === 'none' || cs.visibility === 'hidden' || cs.position === 'fixed') continue;
+      var rc = rectOf(ch);
+      if (rc.width < 2 || rc.height < 2) continue;
+      if (!authoredPx(ch, 'width') || !authoredPx(ch, 'height')) continue;
+      cands.push(rc);
+    }
+    if (cands.length >= 2) {
+      var w0 = cands[0].width, h0 = cands[0].height, ok = true;
+      for (var q = 1; q < cands.length; q++)
+        if (Math.abs(cands[q].width - w0) > 2 || Math.abs(cands[q].height - h0) > 2) ok = false;
+      if (ok) return { kind: 'multi-frame', doc: doc, signals: signals,
+        frames: cands, authored: cands.map(function(){return{width:true,height:true}}) };
+    }
+  }
+
+  el.setAttribute('data-om-frame', '');
+  return { kind: 'single-canvas', doc: doc, signals: signals,
+    frames: [rectOf(el)],
+    authored: [{ width: rootPxW, height: authoredPx(el, 'height') }] };
+})(); } catch (e) {}
+  var frame = null;
+  if (__m && __m.kind === 'single-canvas') {
+    var f = __m.frames && __m.frames[0];
+    if (f && f.width >= 200 && f.height >= 200) {
+      frame = f;
+      var fst = document.createElement('style');
+      fst.textContent = '@media print{@page{size:' + Math.ceil(f.width) + 'px ' +
+        Math.ceil(f.height) + 'px;margin:0}' +
+        'html,body,[data-om-frame-wrap]{padding:0!important;margin:0!important;background:none!important}' +
+        '[data-om-frame]{margin:0!important}}';
+      document.body.appendChild(fst);
+    }
+  }
+  // Relax break-inside on oversized elements. An element taller than a
+  // printable page can't honor break-inside: avoid — browsers either overflow
+  // it or push it whole to the next page, leaving a blank gap, then break it
+  // anyway at an arbitrary point. After the final layout (content revealed,
+  // animations jumped), find elements taller than a page that still compute
+  // break-inside: avoid and reset them to auto, so the browser breaks them at
+  // their children's boundaries instead (children keep their own avoid). PAGE_PX
+  // is a conservative portrait estimate at 96 CSS px/in — Letter/A4 usable
+  // height minus our 0.5in margins — so only clearly-oversized elements are
+  // touched and under-page elements still stay whole. Skipped for decks (slides
+  // are sized to the page) and for fixed-size canvases (frame set, or an author
+  // px-based @page) — runs as before for flowing docs on letter/A4.
+  try {
+    if (!ds && !frame && !(__m && __m.signals && __m.signals.pxPage)) {
+      const PAGE_PX = 1024;
+      // Our print defaults add a real @page margin only when the source has
+      // no @page of its own; computed style can't tell us (it reports screen
+      // media), so read the injected rule directly.
+      const defaults = document.querySelector('style[data-omelette-print-defaults]');
+      const pageInset = /@page\s*\{[^}]*margin/.test(defaults ? defaults.textContent || '' : '');
+      const SEL = 'section,article,figure,table,pre,blockquote,[class~="card" i],[class~="page" i],[class~="sheet" i]';
+      for (const el of document.body.querySelectorAll(SEL)) {
+        if (el instanceof HTMLElement && el.offsetHeight > PAGE_PX) {
+          el.setAttribute('data-om-oversized', '');
+          // Fake-paged docs simulate sheets with over-tall break-after:page
+          // boxes; honoring the break spills half-blank pages and ends a
+          // colored box mid-sheet. Flow them, and (only when we own the page
+          // inset) drop the redundant padding/background via the rule below.
+          const cs = getComputedStyle(el);
+          if (cs.breakAfter === 'page' || cs.pageBreakAfter === 'always') {
+            el.setAttribute('data-om-fakepage', '');
+          }
+        }
+      }
+      const ost = document.createElement('style');
+      ost.textContent = '@media print{' +
+        '[data-om-oversized]{break-inside:auto !important;page-break-inside:auto !important}' +
+        '[data-om-fakepage]{break-after:auto !important;page-break-after:auto !important}' +
+        (pageInset ? '[data-om-fakepage]{padding:0 !important;background:none !important}' : '') +
+        '}';
+      document.head.appendChild(ost);
+    }
+  } catch (e) {}
+  // macOS Preview renders Skia-PDF Luminosity soft-masks as opaque grey boxes;
+  // swap the CSS that triggers them for Preview-safe forms.
+  try {
+    for (const el of document.body.querySelectorAll('*')) {
+      const cs = getComputedStyle(el);
+
+      if (cs.boxShadow !== 'none' && cs.filter === 'none') {
+        const outs = [], kept = [];
+        for (const s of cs.boxShadow.split(/,(?![^(]*[)])/)) {
+          const t = s.trim();
+          const m = t.match(/^(rgba?[(][^)]+[)]) (-?[0-9.]+px) (-?[0-9.]+px) ([0-9.]+px) -?[0-9.]+px$/);
+          if (m && parseFloat(m[4]) > 0) outs.push('drop-shadow(' + m[2] + ' ' + m[3] + ' ' + m[4] + ' ' + m[1] + ')');
+          else kept.push(t);
+        }
+        if (outs.length) {
+          el.style.setProperty('filter', outs.join(' '), 'important');
+          el.style.setProperty('box-shadow', kept.join(', ') || 'none', 'important');
+        }
+      }
+
+      const mask = cs.maskImage && cs.maskImage !== 'none' ? cs.maskImage : cs.webkitMaskImage;
+      if (mask && mask !== 'none' && cs.filter === 'none') el.style.setProperty('filter', 'opacity(1)', 'important');
+    }
+  } catch (e) {}
+  setTimeout(() => { try { window.print(); } catch (e) {} }, 200);
+})();
+</script>
+</body>
+</html>
